@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.navigation.NavController
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -45,8 +46,8 @@ fun AuthScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val webClientId = "500008577319-gvvr627ni0q5f4pbcmqi963s6mlrvj9i.apps.googleusercontent.com"
-
+   // val webClientId = "500008577319-gvvr627ni0q5f4pbcmqi963s6mlrvj9i.apps.googleusercontent.com"
+    val webClientId = "500008577319-66cfcat1ial6s7b6ncva5h6rs5c9iud1.apps.googleusercontent.com"
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -234,6 +235,7 @@ fun AuthScreen(navController: NavController) {
                     TicketButton(
                         text = "Continuar con Google",
                         onClick = {
+                            errorMessage = null
                             scope.launch {
                                 try {
                                     val googleIdOption = GetGoogleIdOption.Builder()
@@ -274,12 +276,14 @@ fun AuthScreen(navController: NavController) {
                                             errorMessage = TiDBService.lastError ?: "Error al iniciar sesión con Google"
                                         }
                                     } else {
-                                        errorMessage = "No se obtuvo un token válido de Google"
+                                        errorMessage = "No se obtuvo una credencial válida de Google"
                                     }
-                                } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
-                                    // Usuario canceló la selección de cuenta
+                                } catch (e: GetCredentialCancellationException) {
+                                    // El usuario cerró el diálogo de cuentas de Google
+                                } catch (e: NoCredentialException) {
+                                    errorMessage = "Google Sign-In requiere crear un Client ID de tipo 'Aplicación web' en Google Cloud Console."
                                 } catch (e: GetCredentialException) {
-                                    errorMessage = "Google Sign-In no disponible: ${e.message}"
+                                    errorMessage = "Google Sign-In no disponible: ${e.message ?: e.javaClass.simpleName}"
                                 } catch (e: Exception) {
                                     errorMessage = "Error al conectar con Google: ${e.localizedMessage}"
                                 }
@@ -291,19 +295,10 @@ fun AuthScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Row(
+                    Box(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        contentAlignment = Alignment.Center
                     ) {
-                        TicketButton(
-                            text = "Por SMS",
-                            onClick = { navController.navigate("phone-verification") },
-                            type = ButtonType.Text,
-                            size = ButtonSize.Small,
-                            icon = Icons.Filled.Phone
-                        )
-
                         TicketButton(
                             text = "¿Olvidaste tu contraseña?",
                             onClick = { navController.navigate("forgot-password") },

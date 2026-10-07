@@ -38,7 +38,8 @@ import kotlinx.coroutines.flow.asStateFlow
 object TiDBService {
 
     // IP del host en la red local (Laragon / Servidor local)
-    private const val API_BASE_URL = "http://192.168.10.88:8080"
+  //  private const val API_BASE_URL = "http://192.168.10.88:8080"
+    private const val API_BASE_URL = "https://netsur-backend.onrender.com"
 
     private var authToken: String? = null
 
@@ -61,9 +62,9 @@ object TiDBService {
             })
         }
         install(HttpTimeout) {
-            connectTimeoutMillis = 15_000
-            requestTimeoutMillis = 30_000
-            socketTimeoutMillis = 30_000
+            connectTimeoutMillis = 30_000
+            requestTimeoutMillis = 60_000
+            socketTimeoutMillis = 60_000
         }
     }
 
@@ -72,7 +73,11 @@ object TiDBService {
     }
 
     private fun logError(op: String, e: Exception): String {
-        val msg = "${e::class.java.simpleName}: ${e.message}"
+        val msg = if (e is HttpRequestTimeoutException || e is java.net.SocketTimeoutException || e is java.net.ConnectException) {
+            "El servidor en la nube se está iniciando. Por favor, intenta de nuevo en unos segundos."
+        } else {
+            "${e::class.java.simpleName}: ${e.message}"
+        }
         Log.e("TiDBService", "$op fallo -> $msg")
         return msg
     }
