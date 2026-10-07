@@ -1,21 +1,19 @@
-# Dockerfile para Servidor Backend Ktor (TicketApp / NETSUR)
-FROM eclipse-temurin:17-jdk-alpine AS build
+# Dockerfile para Servidor Backend Ktor (Render.com)
+FROM gradle:8.5-jdk17-alpine AS build
 WORKDIR /app
 
-# Copiar archivos de construccion de Gradle
-COPY gradle/ gradle/
-COPY gradlew gradlew.bat build.gradle.kts settings.gradle.kts ./
+# Copiar archivos del proyecto
+COPY build.gradle.kts settings.gradle.kts ./
 COPY src/ src/
 
-# Dar permisos de ejecucion y construir la distribucion
-RUN chmod +x gradlew
-RUN ./gradlew installDist --no-daemon
+# Construir la distribucion
+RUN gradle installDist --no-daemon
 
 # Imagen final de ejecucion
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Copiar la aplicacion construida
+# Copiar ejecutable compilado
 COPY --from=build /app/build/install/ticket-server /app/
 
 # Puerto expuesto
