@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} %-5level %logger{25} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- El log de DEBUG de Netty/Hikari tapaba los errores reales del servidor. -->
+    <logger name="io.netty" level="WARN" />
+    <logger name="com.zaxxer.hikari" level="WARN" />
+    <logger name="io.ktor" level="INFO" />
+    <logger name="org.eclipse.jetty" level="WARN" />
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

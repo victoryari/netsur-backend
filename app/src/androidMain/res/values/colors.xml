@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores de la aplicación - Sincronizados con TicketColors en Color.kt -->
+    <color name="primary">#FF1E3A8A</color>
+    <color name="primary_variant">#FF3B82F6</color>
+    <color name="on_primary">#FFFFFFFF</color>
+    <color name="secondary">#FF60A5FA</color>
+    <color name="on_secondary">#FFFFFFFF</color>
+    <color name="error">#FFDC2626</color>
+    <color name="on_error">#FFFFFFFF</color>
+    <color name="background">#FFF9FAFB</color>
+    <color name="on_background">#FF1F2937</color>
+    <color name="surface">#FFFFFFFF</color>
+    <color name="on_surface">#FF1F2937</color>
+    <color name="surface_variant">#FFF3F4F6</color>
+    <color name="on_surface_variant">#FF6B7280</color>
+    <color name="outline">#FFD1D5DB</color>
+
+    <!-- Icono de launcher -->
+    <color name="ic_launcher_background">#FF1E3A8A</color>
+    <color name="ic_launcher_foreground">#FFFFFFFF</color>
+</resources>

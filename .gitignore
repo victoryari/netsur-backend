@@ -1,0 +1,24 @@
+# Gradle files
+.gradle/
+build/
+app/build/
+server/build/
+server/.gradle/
+
+# Local configuration files
+local.properties
+.idea/workspace.xml
+.idea/caches/
+.idea/shelf/
+.idea/navFolder.xml
+.idea/assetWizardSettings.xml
+
+# Log files and temporary files
+*.log
+*.blob
+*.apk
+*.aab
+
+# OS files
+.DS_Store
+Thumbs.db
