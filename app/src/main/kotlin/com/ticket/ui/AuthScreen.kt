@@ -238,14 +238,22 @@ fun AuthScreen(navController: NavController) {
                             errorMessage = null
                             scope.launch {
                                 try {
-                                    val googleIdOption = GetGoogleIdOption.Builder()
-                                        .setFilterByAuthorizedAccounts(false)
-                                        .setServerClientId(webClientId)
-                                        .setAutoSelectEnabled(false)
-                                        .build()
+                                    val nonce = java.util.UUID.randomUUID().toString()
+                                    val googleOption = try {
+                                        com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption.Builder(webClientId)
+                                            .setNonce(nonce)
+                                            .build()
+                                    } catch (e: Exception) {
+                                        GetGoogleIdOption.Builder()
+                                            .setFilterByAuthorizedAccounts(false)
+                                            .setServerClientId(webClientId)
+                                            .setNonce(nonce)
+                                            .setAutoSelectEnabled(false)
+                                            .build()
+                                    }
 
                                     val request = GetCredentialRequest.Builder()
-                                        .addCredentialOption(googleIdOption)
+                                        .addCredentialOption(googleOption)
                                         .build()
 
                                     val credentialManager = CredentialManager.create(context)
@@ -276,16 +284,14 @@ fun AuthScreen(navController: NavController) {
                                             errorMessage = TiDBService.lastError ?: "Error al iniciar sesión con Google"
                                         }
                                     } else {
-                                        errorMessage = "No se obtuvo una credencial válida de Google"
+                                        errorMessage = "No se obtuvo una credencial de tipo Google ID Token"
                                     }
                                 } catch (e: GetCredentialCancellationException) {
-                                    // El usuario cerró el diálogo de cuentas de Google
-                                } catch (e: NoCredentialException) {
-                                    errorMessage = "Google Sign-In requiere crear un Client ID de tipo 'Aplicación web' en Google Cloud Console."
+                                    // El usuario canceló o cerró la ventana de selección
                                 } catch (e: GetCredentialException) {
-                                    errorMessage = "Google Sign-In no disponible: ${e.message ?: e.javaClass.simpleName}"
+                                    errorMessage = "Google Sign-In (${e.javaClass.simpleName}): ${e.message ?: "Sin detalles. Revisa la SHA-1 en Google Cloud Console."}"
                                 } catch (e: Exception) {
-                                    errorMessage = "Error al conectar con Google: ${e.localizedMessage}"
+                                    errorMessage = "Error al conectar con Google: ${e.localizedMessage ?: e.javaClass.simpleName}"
                                 }
                             }
                         },
